@@ -25,6 +25,15 @@ library(cluster)
 library(dplyr)
 ```
 
+**Description**
+
+For this analysis we leverage supervised learning techniques in order to create a model that will accurately classify future documents. We leverage NLP and tm packages in R, to create Text-Document Matrices. Then we combine our matrices with our existing data, in order to build out predictive models. Our model is applied to a training and test data set, as final test to verify performance. 
+
+
+**Corpus** 
+
+Our body of text/corpus are reviews and ratings for mobile apps in the Apple and Google Play stores. The code below ingests our text files, and then creates Document-term matrices, based on the open ended responses provided in our description field (MentionsTable$Description).
+
 ```{r}
 #Corpus Import & Syntax
 #fileencoding needs to be set to "latin1"
@@ -68,6 +77,9 @@ mentionsfreq <- rowSums(as.matrix(mtdm))
 #findFreqTerms(mentionstdm2, lowfreq = 1)
 ```
 
+**Word Frequency & Visualization**
+
+Below is a series of frequency charts on single words and bi grams to help us understand what words and terms are used most, and cluster together. 
 
 ```{r}
 #Single Term Frequency Charts
@@ -117,7 +129,9 @@ rect.hclust(cluster, k=2, border="orange")
 ```
 
 
-Mentions Classification & Analysis
+**Mentions Classification & Analysis**
+
+Leveraging the sentiment corpus for negative and positive terms provided by Hu * Liu, and the tm_term_score function to allocate an integer value for each document. Once we've derived a score, then we create two variables "pos" and "neg", that become added to our data frame and as an independent variable in predictive model. For this analysis, we've also derived a custom variable called "sentiment", based on the ratio of "pos" to "neg" comments. 
 
 ```{r}
 #pos and neg sentiment sourced from Hu and Liu
@@ -151,6 +165,12 @@ myValuesB <- barplot(tone, main="Mentions Tone", xlab = "Tone Category", col=c("
 text(x = myValuesB, y = tone, labels = tone, pos = 3, cex = .8, col = "black")
 ```
 
+**Predictive Model** 
+
+By appending Document Term Matrices to our existing data frame, essentially as dummy variables. We're now able to combine the most of frequent terms that we've found in our corpus from app feedback, along with the "pos" & "neg" scores derived from the generic sentiment corpus from Hu & Liu, to build out a more robust model.  
+
+The model we used for our tree and our final predictive model was "sentiment ~ neg + pos + wwe + usa + smackdown". 
+
 ```{r,echo=FALSE, warning=FALSE}
 #append to data frame
 
@@ -165,12 +185,16 @@ MentionsTable.tree = rpart(sentiment ~ neg + pos + wwe + usa + smackdown,  metho
 prp(MentionsTable.tree)
 ```
 
+Conclusion & Insights
+
+Splitting our data between train and test (80/20), we're able to apply the model we selected (manually) above for our decision tree to both splits of the data. The purpose of applying our model to our test data set, is to compare our predictions to the training (historical) data - as proxy for how accurately future data would be predicted. We can see from the predict values on our test data below, that the output matches what we're seeing on the training data - indicating that we have a good fit for our predictive model. 
+
 ```{r, echo=FALSE}
 pred.tree = predict(MentionsTable.tree, MentionsTable.test,  type="class")
 table(MentionsTable.test$sentiment,pred.tree,dnn=c("Obs","Pred"))
 ```
 
-Code Source: <a href=https://rstudio-pubs-static.s3.amazonaws.com/31867_8236987cf0a8444e962ccd2aec46d9c3.html>Basic Text Mining in R</a>
+Code Source: <a href=https://rstudio-pubs-static.s3.amazonaws.com/132792_864e3813b0ec47cb95c7e1e2e2ad83e7.html>Basic Text Mining in R</a>
 
 Code Source: <a href=http://tm.r-forge.r-project.org/faq.html#Bigrams>Bigram Text-Document Matrices</a>
 
