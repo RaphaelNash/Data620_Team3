@@ -140,7 +140,7 @@ pos_words = read.table("/Users/digitalmarketer1977/Desktop/positive-words.txt", 
 neg_words = read.table("/Users/digitalmarketer1977/Desktop/negative-words.txt", header = F, stringsAsFactors = F)[, 1]
 ```
 
-```{r,echo=FALSE}
+```{r, fig.align='center'}
 
 MentionsTable$neg = sapply(mentiondesc, tm_term_score, neg_words)
 MentionsTable$pos = sapply(mentiondesc, tm_term_score, pos_words)
@@ -148,8 +148,8 @@ MentionsTable$pos = sapply(mentiondesc, tm_term_score, pos_words)
 #Raw Sum of Neg vs. Pos Comments
 sumpos <- sum(MentionsTable$pos)
 sumneg <- sum(MentionsTable$neg)
-sumcomments <- barplot(c(sumneg,sumpos),col = c("red","darkgreen"), ylim = c(0,3500))
-text(x = sumcomments, y = c(sumneg,sumpos),labels = c(sumneg,sumpos), pos = 3 , cex = .8, col = "black")
+#sumcomments <- barplot(c(sumneg,sumpos),col = c("red","darkgreen"), ylim = c(0,3500))
+#text(x = sumcomments, y = c(sumneg,sumpos),labels = c(sumneg,sumpos), pos = 3 , cex = .8, col = "black")
 
 #Sentiment Classification & Analysis
 MentionsTable$sentiment = MentionsTable$pos/MentionsTable$neg
@@ -171,7 +171,7 @@ By appending Document Term Matrices to our existing data frame, essentially as d
 
 The model we used for our tree and our final predictive model was "sentiment ~ neg + pos + wwe + usa + smackdown". 
 
-```{r,echo=FALSE, warning=FALSE}
+```{r, warning=FALSE}
 #append to data frame
 
 MentionsTable = cbind(MentionsTable, as.matrix(mentionsdtm2))
